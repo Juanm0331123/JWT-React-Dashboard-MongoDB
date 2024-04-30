@@ -1,5 +1,5 @@
 // Componente que usa useContext para guardar el estado y funciones que se usan en toda la aplicación
-import { useContext, createContext, useState, useEffect } from 'react';
+import { useContext, createContext, useState } from 'react';
 
 interface AuthProviderProps {
   children: React.ReactNode;
