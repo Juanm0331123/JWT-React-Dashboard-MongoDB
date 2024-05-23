@@ -1,6 +1,8 @@
 const { jsonResponse } = require("../lib/jsonResponse");
+const User = require('../models/user')
+const { getUserInfo } = require('../lib/getUserInfo');
 
-const logIn = (req, res) => {
+const logIn = async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -9,16 +11,26 @@ const logIn = (req, res) => {
         }));
     }
 
-    // Autenticar Usuario
-    const accesToken = "access_token";
-    const refreshToken = "refresh_token";
-    const user = {
-        id: "1",
-        name: "Juan",
-        username: "juanito",
-    };
+    const user = await User.findOne({ username });
 
-    res.status(200).json(jsonResponse(200, { user, accesToken, refreshToken }));
+    if (user) {
+        const correctPassword = await user.comparePassword(password, user.password);
+        if (correctPassword) {
+            // Autenticar Usuario
+            const accessToken = user.createAccessToken();
+            const refreshToken = await user.createRefreshToken();
+
+            return res.status(200).json(jsonResponse(200, { user: getUserInfo(user), accessToken, refreshToken }));
+        } else {
+            res.status(400).json(jsonResponse(400, {
+                error: 'User or password incorrect'
+            }))
+        }
+    } else {
+        res.status(400).json(jsonResponse(400, {
+            error: 'User not found'
+        }))
+    }
 };
 
 module.exports = {
