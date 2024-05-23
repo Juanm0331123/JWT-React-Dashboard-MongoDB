@@ -1,6 +1,7 @@
 const { jsonResponse } = require("../lib/jsonResponse");
+const User = require('../models/user');
 
-const signUp = (req, res) => {
+const signUp = async (req, res) => {
     const { username, name, password } = req.body;
 
     if (!username || !name || !password) {
@@ -9,12 +10,32 @@ const signUp = (req, res) => {
         }));
     }
 
-    // Crear el usuario
-    res.status(200).json(jsonResponse(200, {
-        message: 'User Created Successfully',
-    }));
+    try {
+        const user = new User();
+        const exist = await user.usernameExists(username);
 
-    res.send('Sign Up');
+        console.log(exist);
+
+        if (exist) {
+            return res.status(400).json(
+                jsonResponse(400, {
+                    error: 'Username already exists'
+                })
+            )
+        }
+
+        const newUser = new User({ name, username, password });
+
+        await newUser.save();
+
+        res.status(200).json(jsonResponse(200, {
+            message: 'User Created Successfully',
+        }));
+    } catch (error) {
+        res.status(500).json(jsonResponse(500, {
+            error: 'Errir creating user',
+        }));
+    }
 };
 
 module.exports = {

@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import DefaultLayout from '../layout/DefaultLayout';
 import { useAuth } from '../auth/AuthProvider';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { API_URL } from '../auth/Constants';
+import { AuthResponseError } from '../types/types';
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const auth = useAuth();
+  const goTo = useNavigate();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,12 +25,18 @@ export default function Login() {
       });
 
       if (response.ok) {
-        console.log('User created successfully');
+        console.log('User login successfully');
+        setError('');
+        goTo('/');
       } else {
-        console.log('Error creating user');
+        console.log('Error login user');
+        const json = (await response.json()) as AuthResponseError;
+        setError(json.body.error);
+        return;
       }
     } catch (error) {
       console.error(error);
+      setError('Error connecting to server');
     }
   }
 
@@ -37,9 +46,9 @@ export default function Login() {
 
   return (
     <DefaultLayout>
-      <form className="form">
+      <form className="form" onSubmit={handleSubmit}>
         <h1>Login</h1>
-
+        {!!error && <div className="errorMessage">{error}</div>}
         <label>Username</label>
         <input
           type="text"

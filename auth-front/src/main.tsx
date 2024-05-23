@@ -1,38 +1,38 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Signup from './routes/Signup.tsx'
-import Login from './routes/Login.tsx'
-import Dashboard from './routes/Dashboard.tsx'
-import ProtectedRoute from './routes/ProtectedRoute.tsx'
-import { AuthProvider } from './auth/AuthProvider.tsx'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Signup from './routes/Signup.tsx';
+import Login from './routes/Login.tsx';
+import Dashboard from './routes/Dashboard.tsx';
+import ProtectedRoute from './routes/ProtectedRoute.tsx';
+import { AuthProvider } from './auth/AuthProvider.tsx';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Login />
+    element: <Login />,
   },
   {
     path: '/signup',
-    element: <Signup />
+    element: <Signup />,
   },
   {
     path: '/',
     element: <ProtectedRoute />,
-    children:[
+    children: [
       {
         path: '/dashboard',
-        element: <Dashboard />
-      }
-    ]
+        element: <Dashboard />,
+      },
+    ],
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AuthProvider>
-      <RouterProvider router={router}/>
+      <RouterProvider router={router} />
     </AuthProvider>
   </React.StrictMode>,
-)
+);

@@ -10,6 +10,13 @@ require('dotenv').config();
 app.use(cors());
 app.use(express.json());
 
+async function main() {
+    await mongoose.connect(process.env.DB_CONNECTION_STRING)
+    console.log('Connected to MongoDB')
+}
+
+main().catch(err => console.log(err))
+
 app.use('/api/signup', require('./src/routes/signup.routes.js'))
 app.use('/api/login', require('./src/routes/login.routes.js'))
 app.use('/api/user', require('./src/routes/user.routes.js'))
